@@ -1,0 +1,22 @@
+---
+- name: Provisioning server
+  hosts: all
+  become: yes
+  tasks:
+    - name: Updating banner file
+      copy:
+        content: "This {{ansible_distribution}} machine is managed using Ansible. No Manual modification is allowed"
+        dest: /etc/motd
+      tags:
+        - system
+    - name: Install packages
+      yum:
+        name: "{{item}}"
+        state: present
+      loop:
+        - wget
+        - unzip
+        - python3-pip
+        - stress
+      tags:
+        - packages
