@@ -1,7 +1,7 @@
-*.tfvars
+
 .terraform
 *log
 *.pem
 *inventory.ini
-
+.secrets
 __pycache__
