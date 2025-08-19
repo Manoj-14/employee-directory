@@ -43,20 +43,27 @@ module "ec2" {
   tags                = var.tags
 }
 
+# resource "local_file" "ansible_inventory" {
+#   filename             = "${path.module}/../ansible/inventory.ini"
+#   file_permission      = "0644"
+#   directory_permission = "0755"
+
+#   content = <<EOT
+#     server ansible_host=${module.ec2.public_ip}
+
+#     [servers]
+#     server
+
+#     [servers:vars]
+#     ansible_user=ec2-user
+#     ansible_ssh_private_key_file=emp-dir-key.pem
+#     ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+#     EOT
+# }
+
 resource "local_file" "ansible_inventory" {
-  filename             = "${path.module}/../ansible/inventory.ini"
-  file_permission      = "0644"
-  directory_permission = "0755"
-
-  content = <<EOT
-    server ansible_host=${module.ec2.public_ip}
-
-    [servers]
-    server
-
-    [servers:vars]
-    ansible_user=ec2-user
-    ansible_ssh_private_key_file=emp-dir-key.pem
-    ansible_ssh_common_args='-o StrictHostKeyChecking=no'
-    EOT
+  content = templatefile("${path.module}/inventory.tftpl", {
+    server_groups = local.ansible_inventory_groups
+  })
+  filename = "${path.module}/../ansible/inventory.ini"
 }

@@ -1,0 +1,14 @@
+
+%{ for group_name, hosts in server_groups ~}
+
+[${group_name}]
+
+%{ for ip in hosts ~}
+
+${ip} ansible_user=ec2_user
+
+%{ endfor ~}
+
+
+
+%{ endfor ~}

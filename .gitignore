@@ -5,3 +5,5 @@
 *inventory.ini
 .secrets
 __pycache__
+-private-key
+.artifacts
