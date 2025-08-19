@@ -1,0 +1,66 @@
+name: Employee Directory Infrastructure
+on:
+    workflow_call:
+        inputs:
+            environment:
+                required: true
+                type: string
+            working-directory:
+                required: true
+                type: string
+            terraform-action:
+                required: true
+                type: string
+        secrets:
+            AWS_ACCESS_SECRET_KEY:
+                required: true
+            AWS__SECRET_KEY:
+                required: true
+            TF_STATE_BUCKET:
+                required: true
+
+
+jobs:
+    terraform:
+        runs-on: ubuntu-latest
+        environment: ${{inputs.environment}}
+        defaults:
+            run:
+                shell: bash
+                working-directory: ${{inputs.working-directory}}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: set up terraform
+              uses: hashicorp/setup-terraform@v3
+
+            - name: Terraform init
+              id: init
+              run: terraform init -backend-config="bucket=${{secrets.TF_STATE_BUCKET}}"
+
+            - name: Terraform format
+              id: fmt
+              run: terraform fmt -check #only check don't modify
+
+            - name: Terraform validate
+              id: validate
+              run: terrafrom validate
+
+            - name: Terrafrom Plan
+              if: inputs.terraform-action == 'plan'
+              id: plan
+              run: terrafrom plan -no-color -input=false -out planfile
+
+            - name: Terraform plan status
+              if: steps.plan.outcome == 'failure'
+              run: exit 1
+
+            - name: Terraform apply
+              if: inputs.terraform-action == 'apply' && github.ref == 'ref/heads/main' && github.event_name=='push'
+              run: terrafrom apply -auto-approve -no-color -input=false -parallelism=1 planfile
+
+            - name: Terraform destroy
+              if: inputs.terraform-action == 'destroy'
+              run: terrafrom apply -auto-approve -no-color -input=false -parallelism=1 planfile

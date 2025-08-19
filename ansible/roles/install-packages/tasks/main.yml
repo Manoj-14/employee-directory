@@ -1,0 +1,21 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for install-packages
+- name: Updating banner file
+  copy:
+    content: "This {{ansible_distribution}} machine is managed using Ansible. No Manual modification is allowed"
+    dest: /etc/motd
+  tags:
+    - system
+- name: Install packages
+  yum:
+    name: "{{item}}"
+    state: present
+  loop:
+    - wget
+    - unzip
+    - git
+    - python3-pip
+    - stress
+  tags:
+    - packages
