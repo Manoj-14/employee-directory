@@ -57,7 +57,7 @@ jobs:
               run: |
                 PRIVATE_KEY=$(terraform output -raw private_key)
                 echo "::add-mask::$PRIVATE_KEY"
-                cho "private_key=$PRIVATE_KEY" >> $GITHUB_OUTPUT
+                echo "private_key=$PRIVATE_KEY" >> $GITHUB_OUTPUT
 
             - name: Upload Anisble Inventory as Artifact
               uses: actions/upload-artifact@v4
