@@ -1,4 +1,4 @@
-name: Main work flow
+name: Main CI/CD Workflow
 on: workflow_dispatch
 jobs:
     infrastructure-creation:
@@ -12,7 +12,7 @@ jobs:
                 working-directory: ./infrastructure
 
         outputs:
-          private_key: ${{steps.pem-key.outcome.private_key}}
+          private_key: ${{steps.pem-key.outputs.private_key}}
 
         steps:
             - name: Code Checkout
@@ -49,7 +49,8 @@ jobs:
               run: exit 1
 
             - name: Terrafrom apply
-            #   if: github.ref == 'refs/heads/stage' && github.event_name=='push'
+            #   if: github.ref == 'refs/heads/main' && github.event_name=='push'
+              id: apply
               run: terraform apply -no-color -auto-approve -input=false -parallelism=1  planfile
 
             - name: Get private key from terraform output
@@ -57,7 +58,10 @@ jobs:
               run: |
                 PRIVATE_KEY=$(terraform output -raw private_key)
                 echo "::add-mask::$PRIVATE_KEY"
-                echo "private_key=$PRIVATE_KEY" >> $GITHUB_OUTPUT
+                EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+                echo "private_key<<$EOF" >> $GITHUB_OUTPUT
+                echo "$PRIVATE_KEY" >> $GITHUB_OUTPUT
+                echo "$EOF" >> $GITHUB_OUTPUT
 
             - name: Upload Anisble Inventory as Artifact
               uses: actions/upload-artifact@v4
@@ -87,6 +91,11 @@ jobs:
               uses: webfactory/ssh-agent@v0.9.0
               with:
                 ssh-private-key: ${{ needs.infrastructure-creation.outputs.private_key }}
+
+            - name: Setup Ansible
+              uses: alex-oleshkevich/setup-ansible@v1.0.1
+              with:
+                version: "10.7.0"
 
             - name: Run ansible playbook
               run: |
