@@ -12,15 +12,15 @@ resource "aws_key_pair" "key" {
     })
 }
 
-resource "local_sensitive_file" "private_key" {
-    content = tls_private_key.ssh_key.private_key_pem
-    filename = "${path.module}/../../../ansible/${var.key_name}.pem"
+# resource "local_sensitive_file" "private_key" {
+#     content = tls_private_key.ssh_key.private_key_pem
+#     filename = "${path.module}/../../../ansible/${var.key_name}.pem"
 
-    provisioner "local-exec" {
-        command = "chmod 400 ${path.module}/../../../ansible/${var.key_name}.pem"
-    }
+#     provisioner "local-exec" {
+#         command = "chmod 400 ${path.module}/../../../ansible/${var.key_name}.pem"
+#     }
 
-}
+# }
 
 resource "aws_security_group" "flask-sg" {
     name_prefix = "${var.project_name}-${var.environment}-flask-"
