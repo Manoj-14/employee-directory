@@ -1,5 +1,9 @@
 name: Main CI/CD Workflow
 on: workflow_dispatch
+env:
+  PROJECT_NAME: ${{secrets.PROJECT_NAME}}
+  ENVIRONMENT: ${{secrets.ENVIRONMENT}}
+
 jobs:
     infrastructure-creation:
         runs-on: ubuntu-latest
@@ -11,8 +15,8 @@ jobs:
                 shell: bash
                 working-directory: ./infrastructure
 
-        outputs:
-          private_key: ${{steps.pem-key.outputs.private_key}}
+        # outputs:
+        #   private_key: ${{steps.pem-key.outputs.private_key}}
 
         steps:
             - name: Code Checkout
@@ -53,15 +57,15 @@ jobs:
               id: apply
               run: terraform apply -no-color -auto-approve -input=false -parallelism=1  planfile
 
-            - name: Get private key from terraform output
-              id: pem-key
-              run: |
-                PRIVATE_KEY=$(terraform output -raw private_key)
-                echo "::add-mask::$PRIVATE_KEY"
-                EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-                echo "private_key<<$EOF" >> $GITHUB_OUTPUT
-                echo "$PRIVATE_KEY" >> $GITHUB_OUTPUT
-                echo "$EOF" >> $GITHUB_OUTPUT
+            # - name: Get private key from terraform output
+            #   id: pem-key
+            #   run: |
+            #     PRIVATE_KEY=$(terraform output -raw private_key)
+            #     echo "::add-mask::$PRIVATE_KEY"
+            #     EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+            #     echo "private_key<<$EOF" >> $GITHUB_OUTPUT
+            #     echo "$PRIVATE_KEY" >> $GITHUB_OUTPUT
+            #     echo "$EOF" >> $GITHUB_OUTPUT
 
             - name: Upload Anisble Inventory as Artifact
               uses: actions/upload-artifact@v4
@@ -87,10 +91,24 @@ jobs:
                 name: ansible-inventory
                 path: ./ansible
 
+            - name: AWS configure
+              uses: aws-actions/configure-aws-credentials@v4.1.0
+              with:
+                aws-access-key-id:  ${{secrets.AWS_ACCESS_KEY_ID}}
+                aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+                aws-region: ${{secrets.AWS_REGION}}
+
+            - name: Load Private Key from aws secret manager
+              uses: aws-actions/aws-secretsmanager-get-secrets@v2
+              id: get-secret
+              with:
+                secret-ids: |
+                    PRIVATE_KEY, ${{env.PROJECT_NAME}}/${{env.ENVIRONMENT}}/instance-secret
+
             - name: Load Private Key into SSH Agent
               uses: webfactory/ssh-agent@v0.9.0
               with:
-                ssh-private-key: ${{ needs.infrastructure-creation.outputs.private_key }}
+                ssh-private-key: ${{ env.PRIVATE_KEY }}
 
             - name: Setup Ansible
               uses: alex-oleshkevich/setup-ansible@v1.0.1

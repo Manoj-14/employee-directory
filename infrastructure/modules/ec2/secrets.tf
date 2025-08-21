@@ -1,5 +1,5 @@
 resource "aws_secretsmanager_secret" "secret" {
-    name  = "${var.project_name}/${var.environment}/secret"
+    name  = "${var.project_name}/${var.environment}/instance-secret"
 }
 
 resource "aws_secretsmanager_secret_version" "instance-ssh-key" {
