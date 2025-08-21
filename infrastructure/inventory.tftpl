@@ -5,7 +5,7 @@
 
 %{ for ip in hosts ~}
 
-${ip} ansible_user=ec2_user
+${ip} ansible_user=ec2-user
 
 %{ endfor ~}
 
