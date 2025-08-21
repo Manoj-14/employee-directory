@@ -41,3 +41,8 @@ variable ami {
   type        = map(string)
   description = "AMI id's based on region"
 }
+
+variable "roles" {
+  description = "type of servers needed"
+  type = list(string)
+}

@@ -7,6 +7,7 @@ project_name  = "employee-directory"
 environment   = "dev"
 instance_type = "t2.micro"
 key_name      = "emp-dir-key"
+roles         = ["proxy-server", "web-server"]
 tags = {
   project = "employee-directory"
 }

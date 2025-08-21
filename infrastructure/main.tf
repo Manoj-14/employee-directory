@@ -40,6 +40,7 @@ module "ec2" {
   ami                 = var.ami
   vpc_id              = module.vpc.vpc_id
   public_subnet_cidrs = module.vpc.public_subnets
+  roles               = var.roles
   tags                = var.tags
 }
 

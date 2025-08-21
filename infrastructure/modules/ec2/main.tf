@@ -72,7 +72,7 @@ resource "aws_security_group" "flask-sg" {
 }
 
 resource "aws_instance" "server" {
-    count = 2
+    count = length(var.roles)
     ami = var.ami[var.region]
     instance_type=var.instance_type
     key_name = aws_key_pair.key.key_name
@@ -80,6 +80,6 @@ resource "aws_instance" "server" {
     subnet_id = var.public_subnet_cidrs[0]
     tags = merge(var.tags,{
         Name = "${var.project_name}-${var.environment}-server-${count.index}"
-        Role = "web"
+        Role = var.roles[count.index]
     })
 }

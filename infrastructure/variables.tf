@@ -52,3 +52,8 @@ variable "tags" {
   description = "Common tags to apply to all resources"
   type        = map(string)
 }
+
+variable "roles" {
+  description = "type of servers needed"
+  type        = list(string)
+}

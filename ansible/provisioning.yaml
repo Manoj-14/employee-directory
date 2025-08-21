@@ -1,7 +1,13 @@
 ---
-- name: Provisioning server
+- name: Installing packages in all hosts
   hosts: all
   become: yes
   roles:
     - install-packages
+
+- name: Adding config to proxy-server
+  hosts:
+    - proxy-server
+  become: yes
+  roles:
     - nginx

@@ -12,6 +12,7 @@ on:
 env:
   PROJECT_NAME: ${{secrets.PROJECT_NAME}}
   ENVIRONMENT: ${{secrets.ENVIRONMENT}}
+  PRIVATE_KEY:
 
 jobs:
     infrastructure-creation:
