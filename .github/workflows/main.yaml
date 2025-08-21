@@ -1,5 +1,14 @@
 name: Main CI/CD Workflow
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
 env:
   PROJECT_NAME: ${{secrets.PROJECT_NAME}}
   ENVIRONMENT: ${{secrets.ENVIRONMENT}}
