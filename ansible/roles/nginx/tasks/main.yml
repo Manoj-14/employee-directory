@@ -23,4 +23,4 @@
   notify:
     - Restart Nginx
   tags:
-    - configuration
+    - config

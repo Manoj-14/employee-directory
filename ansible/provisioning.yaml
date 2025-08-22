@@ -11,3 +11,10 @@
   become: yes
   roles:
     - nginx
+
+- name: Deploying application in web-servers
+  hosts:
+    - web-server
+  become: yes
+  roles:
+    - app-deployment

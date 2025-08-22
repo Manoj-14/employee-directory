@@ -41,6 +41,7 @@ module "ec2" {
   vpc_id              = module.vpc.vpc_id
   public_subnet_cidrs = module.vpc.public_subnets
   roles               = var.roles
+  secret_name         = var.secret_name
   tags                = var.tags
 }
 

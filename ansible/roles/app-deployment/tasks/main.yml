@@ -1,0 +1,64 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for app-deployment
+- name: Create emp-directory
+  file:
+    path: "/opt/emp-directory"
+    state: directory
+  tags:
+    - files
+
+- name: Ensure rsync is installed
+  package:
+    name: rsync
+    state: present
+  tags:
+    - packages
+
+- name: Copy application code
+  synchronize:
+    src: "../app/"
+    dest: "/opt/emp-directory/"
+    delete: yes
+    recursive: yes
+    rsync_opts:
+      - "--times"
+      - "--checksum"
+      - "--exclude=__pycache__"
+      - "--exclude=*.pyc"
+      - "--exclude=.git"
+      - "--exclude=*.log"
+  tags:
+    - files
+    - deploy
+
+- name: Install Python dependencies
+  pip:
+    requirements: /opt/emp-directory/requirements.txt
+    executable: pip3
+    state: present
+  tags:
+    - deploy
+    - pip-packages
+
+- name: Create service file
+  template:
+    src: employee-dir.service.j2
+    dest: "/etc/systemd/system/empdir.service"
+    mode: "0644"
+  notify:
+    - restart systemd
+    - restart empdir service
+  tags:
+    - files
+    - service
+    - config
+
+- name: Start and enable empdir service
+  service:
+    name: empdir
+    state: started
+    enabled: yes
+    daemon-reload: yes
+  tags:
+    - service

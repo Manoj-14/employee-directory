@@ -46,3 +46,8 @@ variable "roles" {
   description = "type of servers needed"
   type = list(string)
 }
+
+variable "secret_name" {
+  description = "name of the secret in secret manager"
+  type = string
+}
