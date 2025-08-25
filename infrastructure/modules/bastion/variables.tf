@@ -17,11 +17,6 @@ variable "instance_type" {
   type        = string
 }
 
-variable "key_name" {
-  description = "EC2 Key Pair name"
-  type        = string
-}
-
 variable "vpc_id" {
   description = "VPC ID where resources will be created"
   type        = string
@@ -31,12 +26,6 @@ variable "public_subnet_cidrs" {
   description = "List of public subnet IDs"
   type        = list(string)
 }
-
-variable "private_subnet_cidrs" {
-  description = "list of CIDR's for private subnets"
-  type        = list(string)
-}
-
 variable "tags" {
   description = "Common tags to apply to all resources"
   type        = map(string)
@@ -45,14 +34,4 @@ variable "tags" {
 variable ami {
   type        = map(string)
   description = "AMI id's based on region"
-}
-
-variable "roles" {
-  description = "type of servers needed"
-  type = list(string)
-}
-
-variable bastion_security_group_id {
-  description = "bastion sg"
-  type = string
 }

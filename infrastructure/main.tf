@@ -29,21 +29,36 @@ module "vpc" {
   tags                 = var.tags
 }
 
-module "ec2" {
-  source = "./modules/ec2"
+module "bastion" {
+  source = "./modules/bastion"
 
   region              = var.region
   project_name        = var.project_name
   environment         = var.environment
   instance_type       = var.instance_type
-  key_name            = var.key_name
   ami                 = var.ami
   vpc_id              = module.vpc.vpc_id
   public_subnet_cidrs = module.vpc.public_subnets
-  roles               = var.roles
-  secret_name         = var.secret_name
   tags                = var.tags
 }
+
+module "ec2" {
+  source = "./modules/ec2"
+
+  region                    = var.region
+  project_name              = var.project_name
+  environment               = var.environment
+  instance_type             = var.instance_type
+  key_name                  = var.key_name
+  ami                       = var.ami
+  vpc_id                    = module.vpc.vpc_id
+  public_subnet_cidrs       = module.vpc.public_subnets
+  private_subnet_cidrs      = module.vpc.private_subnets
+  bastion_security_group_id = module.bastion.bastion_security_group_id
+  roles                     = var.roles
+  tags                      = var.tags
+}
+
 
 # resource "local_file" "ansible_inventory" {
 #   filename             = "${path.module}/../ansible/inventory.ini"
