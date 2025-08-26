@@ -12,6 +12,7 @@ on:
 env:
   PROJECT_NAME: ${{secrets.PROJECT_NAME}}
   ENVIRONMENT: ${{secrets.ENVIRONMENT}}
+  PRIVATE_KEY:
 
 jobs:
     infrastructure-creation:
@@ -66,16 +67,6 @@ jobs:
               id: apply
               run: terraform apply -no-color -auto-approve -input=false -parallelism=1  planfile
 
-            # - name: Get private key from terraform output
-            #   id: pem-key
-            #   run: |
-            #     PRIVATE_KEY=$(terraform output -raw private_key)
-            #     echo "::add-mask::$PRIVATE_KEY"
-            #     EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-            #     echo "private_key<<$EOF" >> $GITHUB_OUTPUT
-            #     echo "$PRIVATE_KEY" >> $GITHUB_OUTPUT
-            #     echo "$EOF" >> $GITHUB_OUTPUT
-
             - name: Upload Anisble Inventory as Artifact
               uses: actions/upload-artifact@v4
               with:
@@ -112,12 +103,20 @@ jobs:
               id: get-secret
               with:
                 secret-ids: |
-                    PRIVATE_KEY, ${{env.PROJECT_NAME}}/${{env.ENVIRONMENT}}/instance-secret
+                    PRIVATE_KEY, ${{env.PROJECT_NAME}}/${{env.ENVIRONMENT}}/${{secrets.SECRET_NAME}}
+
+            - name: Write Private Key to file
+              run: |
+                echo "${{ env.PRIVATE_KEY }}" > ${{secrets.KEY_FILE_NAME}}
+                chmod 600 ${{secrets.KEY_FILE_NAME}}
 
             - name: Load Private Key into SSH Agent
               uses: webfactory/ssh-agent@v0.9.0
               with:
                 ssh-private-key: ${{ env.PRIVATE_KEY }}
+
+            - name: Install rsync on runner
+              run: sudo apt-get update && sudo apt-get install -y rsync
 
             - name: Setup Ansible
               uses: alex-oleshkevich/setup-ansible@v1.0.1
@@ -126,4 +125,4 @@ jobs:
 
             - name: Run ansible playbook
               run: |
-                ansible web -m ping
+                ansible-playbook provisioning.yaml

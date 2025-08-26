@@ -1,14 +1,17 @@
-
-%{ for group_name, hosts in server_groups ~}
-
-[${group_name}]
-
-%{ for ip in hosts ~}
-
+%{ for group_name, hosts in server_groups }
+[${group_name}-server]
+%{ for ip in hosts }
 ${ip} ansible_user=ec2-user
+%{ endfor }
+%{ endfor }
 
-%{ endfor ~}
+[deployment-servers:children]
+%{ for group_name, hosts in server_groups }
+  %{ if group_name != "bastion" && group_name != "proxy" }
+${group_name}-server
+  %{ endif }
+%{ endfor }
 
-
-
-%{ endfor ~}
+[deployment-servers:vars]
+ansible_user=ec2-user
+ansible_ssh_common_args='-o ProxyCommand="ssh -W %h:%p -q -o StrictHostKeyChecking=no -i ${key_file_name} ec2-user@${bastion_host_public_ip}"'

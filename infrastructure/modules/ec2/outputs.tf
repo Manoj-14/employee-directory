@@ -1,21 +1,28 @@
 output public_ip {
-  description = "public ip"
-  value =  aws_instance.server[*].public_ip
+  description = "public ip of servers"
+  value =  aws_instance.proxy-server.public_ip
 }
 
-output "private_key_pem" {
-  value     = tls_private_key.ssh_key.private_key_pem
-  sensitive = true
-}
-
-output "instances" {
-  description = "instance ip and roles"
-  value = [for inst in aws_instance.server : {public_ip = inst.public_ip , tags = inst.tags}]
-}
-
-output "ansible_inventory_file" {
-  description="anisble inventory file"
+output "proxy_data" {
+  description = "proxy ip and roles"
   value = {
-    for role in distinct([for inst in aws_instance.server : inst.tags.Role]) : role=>[for inst in aws_instance.server : inst.public_ip if inst.tags.Role == role]
+    ip = aws_instance.proxy-server.public_ip,
+    tags = aws_instance.proxy-server.tags
   }
 }
+
+output "servers_data" {
+  description = "other servers ip and roles"
+  value = [for inst in aws_instance.web-server : {ip = inst.private_ip , tags = inst.tags}]
+}
+
+output "key_pair_name"{
+  description = "ssh key pair name"
+  value = aws_key_pair.key.key_name
+}
+# output "ansible_inventory_file" {
+#   description="anisble inventory file"
+#   value = {
+#     for role in distinct([for inst in aws_instance.proxy-server : inst.tags.Role]) : role=>[for inst in aws_instance.proxy-server : inst.ip if inst.tags.Role == role]
+#   }
+# }

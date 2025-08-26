@@ -1,6 +1,11 @@
-output "server_public_ip" {
+output "proxy_public_ip" {
   description = "Public ip of the server"
   value       = module.ec2.public_ip
+}
+
+output "bastion_public_ip" {
+  description = "Public ip of the bastion"
+  value       = module.bastion.public_ip
 }
 
 output "vpc_id" {
@@ -13,13 +18,7 @@ output "public_subnets" {
   value       = module.vpc.public_subnets
 }
 
-output "private_key" {
-  description = "private key"
-  value       = module.ec2.private_key_pem
-  sensitive   = true
-}
-
-output "ansible_inventory_file" {
-  description = "file contents"
-  value       = module.ec2.ansible_inventory_file
-}
+# output "ansible_inventory_file" {
+#   description = "file contents"
+#   value       = module.ec2.ansible_inventory_file
+# }

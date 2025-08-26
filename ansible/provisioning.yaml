@@ -1,7 +1,22 @@
 ---
-- name: Provisioning server
-  hosts: all
+- name: Installing packages in all hosts
+  hosts:
+    - proxy-server
+    - deployment-servers
   become: yes
   roles:
     - install-packages
+
+- name: Adding config to proxy-server
+  hosts:
+    - proxy-server
+  become: yes
+  roles:
     - nginx
+
+- name: Deploying application in web-servers
+  hosts:
+    - deployment-servers
+  become: yes
+  roles:
+    - app-deployment

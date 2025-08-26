@@ -1,0 +1,14 @@
+[Unit]
+Description=Employee service dir
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/emp-directory/
+ExecStart=/usr/local/bin/gunicorn --bind 0.0.0.0:5000 --workers 3 wsgi:application
+Environment="PHOTOS_BUCKET=emp-dir-app-manm"
+Environment="DYNAMO_MODE=on"
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
