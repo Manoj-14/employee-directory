@@ -81,9 +81,9 @@ module "ec2" {
 
 resource "local_file" "ansible_inventory" {
   content = templatefile("${path.module}/inventory.tftpl", {
-    server_groups = local.ansible_inventory_groups
+    server_groups          = local.ansible_inventory_groups
     bastion_host_public_ip = module.bastion.public_ip
-    key_file_name = "${module.ec2.key_pair_name}.pem"
+    key_file_name          = "${module.ec2.key_pair_name}.pem"
   })
   filename = "${path.module}/../ansible/inventory.ini"
 }
