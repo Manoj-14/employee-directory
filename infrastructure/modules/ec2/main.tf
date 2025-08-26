@@ -1,14 +1,81 @@
-resource "tls_private_key" "ssh_key_proxy" {
+# resource "tls_private_key" "ssh_key_proxy" {
+#   algorithm = "RSA"
+#   rsa_bits  = 4096
+# }
+
+# resource "aws_key_pair" "key-proxy" {
+#     key_name = "proxy-key"
+#     public_key = tls_private_key.ssh_key_proxy.public_key_openssh
+
+#     tags = merge(var.tags,{
+#         Name = "${var.project_name}-${var.environment}-key-pair-proxy"
+#     })
+# }
+
+# module "proxy-secrets"{
+#     source ="../secrets"
+
+#     project_name = var.project_name
+#     environment = var.environment
+#     secret_name = "proxy-secret-1"
+#     secret_string = tls_private_key.ssh_key_proxy.private_key_pem
+# }
+
+# resource "tls_private_key" "ssh_key_web" {
+#   algorithm = "RSA"
+#   rsa_bits  = 4096
+# }
+
+# resource "aws_key_pair" "key-web" {
+#     key_name = "web-key"
+#     public_key = tls_private_key.ssh_key_web.public_key_openssh
+
+#     tags = merge(var.tags,{
+#         Name = "${var.project_name}-${var.environment}-key-pair-web"
+#     })
+# }
+
+# module "web-secrets"{
+#     source ="../secrets"
+
+#     project_name = var.project_name
+#     environment = var.environment
+#     secret_name = "web-secret-1"
+#     secret_string = tls_private_key.ssh_key_web.private_key_pem
+# }
+
+
+# resource "local_sensitive_file" "web_private_key" {
+#     content = tls_private_key.ssh_key_web.private_key_pem
+#     filename = "${path.module}/../../../ansible/web.pem"
+
+#     provisioner "local-exec" {
+#         command = "chmod 400 ${path.module}/../../../ansible/web.pem"
+#     }
+
+# }
+
+# resource "local_sensitive_file" "proxy_private_key" {
+#     content = tls_private_key.ssh_key_proxy.private_key_pem
+#     filename = "${path.module}/../../../ansible/proxy.pem"
+
+#     provisioner "local-exec" {
+#         command = "chmod 400 ${path.module}/../../../ansible/proxy.pem"
+#     }
+
+# }
+
+resource "tls_private_key" "ssh_key" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
-resource "aws_key_pair" "key-proxy" {
-    key_name = "proxy-key"
-    public_key = tls_private_key.ssh_key_proxy.public_key_openssh
+resource "aws_key_pair" "key" {
+    key_name = "emp-dir-key"
+    public_key = tls_private_key.ssh_key.public_key_openssh
 
     tags = merge(var.tags,{
-        Name = "${var.project_name}-${var.environment}-key-pair-proxy"
+        Name = "${var.project_name}-${var.environment}-key-pair"
     })
 }
 
@@ -17,50 +84,16 @@ module "proxy-secrets"{
 
     project_name = var.project_name
     environment = var.environment
-    secret_name = "proxy-secret"
-    secret_string = tls_private_key.ssh_key_proxy.private_key_pem
-}
-
-resource "tls_private_key" "ssh_key_web" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
-resource "aws_key_pair" "key-web" {
-    key_name = "web-key"
-    public_key = tls_private_key.ssh_key_web.public_key_openssh
-
-    tags = merge(var.tags,{
-        Name = "${var.project_name}-${var.environment}-key-pair-web"
-    })
-}
-
-module "web-secrets"{
-    source ="../secrets"
-
-    project_name = var.project_name
-    environment = var.environment
-    secret_name = "web-secret"
-    secret_string = tls_private_key.ssh_key_web.private_key_pem
-}
-
-
-resource "local_sensitive_file" "web_private_key" {
-    content = tls_private_key.ssh_key_web.private_key_pem
-    filename = "${path.module}/../../../ansible/web.pem"
-
-    provisioner "local-exec" {
-        command = "chmod 400 ${path.module}/../../../ansible/web.pem"
-    }
-
+    secret_name = "${aws_key_pair.key.key_name}-1"
+    secret_string = tls_private_key.ssh_key.private_key_pem
 }
 
 resource "local_sensitive_file" "proxy_private_key" {
-    content = tls_private_key.ssh_key_proxy.private_key_pem
-    filename = "${path.module}/../../../ansible/proxy.pem"
+    content = tls_private_key.ssh_key.private_key_pem
+    filename = "${path.module}/../../../ansible/${aws_key_pair.key.key_name}.pem"
 
     provisioner "local-exec" {
-        command = "chmod 400 ${path.module}/../../../ansible/proxy.pem"
+        command = "chmod 400 ${path.module}/../../../ansible/${aws_key_pair.key.key_name}.pem"
     }
 
 }
@@ -151,7 +184,7 @@ resource "aws_security_group" "web-sg" {
 resource "aws_instance" "proxy-server" {
     ami = var.ami[var.region]
     instance_type=var.instance_type
-    key_name = aws_key_pair.key-proxy.key_name
+    key_name = aws_key_pair.key.key_name
     vpc_security_group_ids = [aws_security_group.proxy-sg.id]
     subnet_id = var.public_subnet_cidrs[0]
     tags = merge(var.tags,{
@@ -164,7 +197,7 @@ resource "aws_instance" "web-server" {
     for_each = toset(var.roles)
     ami = var.ami[var.region]
     instance_type=var.instance_type
-    key_name = aws_key_pair.key-web.key_name
+    key_name = aws_key_pair.key.key_name
     vpc_security_group_ids = [aws_security_group.web-sg.id]
     subnet_id = var.private_subnet_cidrs[0]
     tags = merge(var.tags,{

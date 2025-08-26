@@ -1,6 +1,8 @@
 ---
 - name: Installing packages in all hosts
-  hosts: all
+  hosts:
+    - proxy-server
+    - deployment-servers
   become: yes
   roles:
     - install-packages
@@ -14,7 +16,7 @@
 
 - name: Deploying application in web-servers
   hosts:
-    - web-server
+    - deployment-servers
   become: yes
   roles:
     - app-deployment

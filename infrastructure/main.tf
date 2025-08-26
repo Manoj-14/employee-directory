@@ -39,6 +39,7 @@ module "bastion" {
   ami                 = var.ami
   vpc_id              = module.vpc.vpc_id
   public_subnet_cidrs = module.vpc.public_subnets
+  key_pair_name       = module.ec2.key_pair_name
   tags                = var.tags
 }
 
@@ -81,6 +82,8 @@ module "ec2" {
 resource "local_file" "ansible_inventory" {
   content = templatefile("${path.module}/inventory.tftpl", {
     server_groups = local.ansible_inventory_groups
+    bastion_host_public_ip = module.bastion.public_ip
+    key_file_name = "${module.ec2.key_pair_name}.pem"
   })
   filename = "${path.module}/../ansible/inventory.ini"
 }

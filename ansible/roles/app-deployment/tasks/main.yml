@@ -21,6 +21,7 @@
     dest: "/opt/emp-directory/"
     delete: yes
     recursive: yes
+    use_ssh_args: yes
     rsync_opts:
       - "--times"
       - "--checksum"

@@ -15,6 +15,11 @@ output "servers_data" {
   description = "other servers ip and roles"
   value = [for inst in aws_instance.web-server : {ip = inst.private_ip , tags = inst.tags}]
 }
+
+output "key_pair_name"{
+  description = "ssh key pair name"
+  value = aws_key_pair.key.key_name
+}
 # output "ansible_inventory_file" {
 #   description="anisble inventory file"
 #   value = {

@@ -35,3 +35,8 @@ variable ami {
   type        = map(string)
   description = "AMI id's based on region"
 }
+
+variable "key_pair_name" {
+    description = "key pair name from ec2 module"
+    type= string
+}
