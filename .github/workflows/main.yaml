@@ -105,6 +105,11 @@ jobs:
                 secret-ids: |
                     PRIVATE_KEY, ${{env.PROJECT_NAME}}/${{env.ENVIRONMENT}}/${{secrets.SECRET_NAME}}
 
+            - name: Write Private Key to file
+              run: |
+                echo "${{ env.PRIVATE_KEY }}" > ${{secrets.KEY_FILE_NAME}}
+                chmod 600 ${{secrets.KEY_FILE_NAME}}
+
             - name: Load Private Key into SSH Agent
               uses: webfactory/ssh-agent@v0.9.0
               with:
