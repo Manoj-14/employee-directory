@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: employee-dir
+  labels:
+    app: employee-dir
+spec:
+  selector:
+    app: employee-dir
+  type: NodePort
+  ports:
+    - name: emp-port
+      port: 8000
+      targetPort: 8000
