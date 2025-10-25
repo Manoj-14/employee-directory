@@ -11,7 +11,7 @@ roles         = ["web-1", "web-2"]
 tags = {
   project = "employee-directory"
 }
-secret_name = "instance-secret-1"
+secret_name = "instance-secret-2"
 
 vpc_cidr             = "10.0.0.0/16"
 availability_zones   = ["ap-southeast-2a", "ap-southeast-2b"]
