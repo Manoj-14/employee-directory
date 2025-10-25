@@ -65,7 +65,7 @@ variable "secret_name" {
 
 variable "cluster_name" {
   description = "eks cluster name"
-  type = string
+  type        = string
 }
 
 variable "cluster_version" {

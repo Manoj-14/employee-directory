@@ -61,7 +61,7 @@ module "ec2" {
 }
 
 module "eks" {
-  source = "./modules/eks"
+  source             = "./modules/eks"
   region             = var.region
   project_name       = var.project_name
   environment        = terraform.workspace
