@@ -11,7 +11,7 @@ on:
       - main
 env:
   PROJECT_NAME: ${{secrets.PROJECT_NAME}}
-  ENVIRONMENT: ${{secrets.ENVIRONMENT}}
+  ENVIRONMENT: ${{github.ref == 'refs/heads/master' && 'production' || 'stage'}}
   PRIVATE_KEY:
 
 jobs:
@@ -53,6 +53,9 @@ jobs:
             - name: Terrafrom Validate
               id: validate
               run: terraform validate
+
+            - name: Terraform workspace
+              run: terraform workspace select ${{env.ENVIRONMENT}} || terraform workspace new ${{env.ENVIRONMENT}}
 
             - name: Terraform plan
               id: plan
