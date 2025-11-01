@@ -24,7 +24,7 @@ podSecurityContext: {}
 securityContext: {}
 
 service:
-  type: NodePort
+  type: ClusterIP
   port: 8000
   targetPort: 8000
 
