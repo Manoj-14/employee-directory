@@ -37,6 +37,11 @@ module "primary_region_eks" {
 module "helm_primary_region" {
   source = "./modules/helm"
 
+  providers = {
+    aws = aws.primary_region
+  }
+
+  project_name             = var.project_name
   cluster_name             = module.primary_region_eks.cluster_name
   cluster_endpoint         = module.primary_region_eks.cluster_endpoint
   cluster_certificate_data = module.primary_region_eks.cluster_certificate_data
@@ -67,6 +72,11 @@ module "secondary_region_eks" {
 module "helm_secondary_region" {
   source = "./modules/helm"
 
+  providers = {
+    aws = aws.secondary_region
+  }
+
+  project_name             = var.project_name
   cluster_name             = module.secondary_region_eks.cluster_name
   cluster_endpoint         = module.secondary_region_eks.cluster_endpoint
   cluster_certificate_data = module.secondary_region_eks.cluster_certificate_data
