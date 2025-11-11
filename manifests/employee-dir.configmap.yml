@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: employee-dir-configmap
+data:
+  PHOTOS_BUCKET: "photo-bucket"
+  DYNAMO_MODE: "on"

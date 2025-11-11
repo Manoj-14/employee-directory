@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: employee-dir
+  labels:
+    app: employee-dir
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: employee-dir
+  template:
+    metadata:
+      labels:
+        app: employee-dir
+    spec:
+      containers:
+        - image: manojmdocker14/employee-directory:v1.0.0
+          name:  employee-dir
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: employee-dir-configmap
+          resources:
+            limits:
+              cpu: 300m
+              memory: 300Mi
+            requests:
+              cpu: 200m
+              memory: 200Mi
+          readinessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3

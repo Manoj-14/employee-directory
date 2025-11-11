@@ -34,7 +34,7 @@ module "bastion" {
 
   region              = var.region
   project_name        = var.project_name
-  environment         = var.environment
+  environment         = terraform.workspace
   instance_type       = var.instance_type
   ami                 = var.ami
   vpc_id              = module.vpc.vpc_id
@@ -48,7 +48,7 @@ module "ec2" {
 
   region                    = var.region
   project_name              = var.project_name
-  environment               = var.environment
+  environment               = terraform.workspace
   instance_type             = var.instance_type
   key_name                  = var.key_name
   ami                       = var.ami
@@ -60,6 +60,23 @@ module "ec2" {
   tags                      = var.tags
 }
 
+module "eks" {
+  source             = "./modules/eks"
+  region             = var.region
+  project_name       = var.project_name
+  environment        = terraform.workspace
+  cluster_name       = var.cluster_name
+  cluster_version    = var.cluster_version
+  cluster_policies   = var.cluster_policys
+  node_policies      = var.node_policies
+  devops_username    = var.devops_username
+  developer_username = var.developer_username
+  vpc_id             = module.vpc.vpc_id
+  subnet_ids         = module.vpc.private_subnets
+  node_groups        = lookup(var.node_groups, terraform.workspace)
+  tags               = { "project-name" : var.project_name, "environment" : terraform.workspace }
+  depends_on         = [module.vpc]
+}
 
 # resource "local_file" "ansible_inventory" {
 #   filename             = "${path.module}/../ansible/inventory.ini"
@@ -86,4 +103,12 @@ resource "local_file" "ansible_inventory" {
     key_file_name          = "${module.ec2.key_pair_name}.pem"
   })
   filename = "${path.module}/../ansible/inventory.ini"
+}
+
+resource "null_resource" "local_kubeconfig_setup" {
+  provisioner "local-exec" {
+    command = <<EOT
+      aws eks update-kubeconfig --name ${module.eks.cluster_name} --region ${var.region}
+    EOT
+  }
 }

@@ -8,3 +8,5 @@ __pycache__
 -private-key
 .artifacts
 .DS_Store
+.vscode
+*.tfstate*

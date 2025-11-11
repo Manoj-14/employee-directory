@@ -84,7 +84,7 @@ module "proxy-secrets"{
 
     project_name = var.project_name
     environment = var.environment
-    secret_name = "${aws_key_pair.key.key_name}-1"
+    secret_name = "${aws_key_pair.key.key_name}-2"
     secret_string = tls_private_key.ssh_key.private_key_pem
 }
 
