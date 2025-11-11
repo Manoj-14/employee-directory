@@ -55,22 +55,26 @@ jobs:
               run: terraform workspace select ${{env.ENVIRONMENT}} || terraform workspace new ${{env.ENVIRONMENT}}
 
             - name: Terraform Plan
-              if: inputs.actions == 'plan' || inputs.actions == 'apply'
+              if: github.event.inputs.actions == 'plan' || github.event.inputs.actions == 'apply'
               id: plan
               run: terraform plan -no-color -input=false -out planfile
 
             - name: Terraform Plan check
-              if: inputs.actions == 'plan' || inputs.actions == 'apply' && steps.plan.outcome == 'failure'
+              if: github.event.inputs.actions == 'plan' || github.event.inputs.actions == 'apply' && steps.plan.outcome == 'failure'
               run: exit 1
 
             - name: Terraform apply
-              if: inputs.actions == 'apply'
-              run: terraform apply -no-color -input=false planfile
+              if: github.event.inputs.actions == 'apply'
+              run: terraform apply -no-color -auto-approve -input=false planfile
+
+            - name: Terraform Destory
+              if: github.event.inputs.actions == 'destroy'
+              run: terraform destroy -auto-approve
 
     Multi-Cluster-Deployment:
         runs-on: ubuntu-latest
         needs: Infrastructure-Creation
-        if: inputs.actions == 'apply'
+        if: github.event.inputs.actions == 'apply'
         defaults:
           run:
             shell: bash
