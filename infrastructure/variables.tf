@@ -1,26 +1,26 @@
 variable "region" {
   description = "region"
-  type        = string
+  type        = map(string)
 }
 
 variable "vpc_cidr" {
-  type        = string
+  type        = map(string)
   description = "CIDR block for VPC"
 }
 
 variable "availability_zones" {
-  type        = list(string)
+  type        = map(list(string))
   description = "CIDR block for VPC"
 }
 
 variable "private_subnet_cidrs" {
   description = "list of CIDR's for private subnets"
-  type        = list(string)
+  type        = map(list(string))
 }
 
 variable "public_subnet_cidrs" {
   description = "list of CIDR's for public subnets"
-  type        = list(string)
+  type        = map(list(string))
 }
 
 variable "ami" {
@@ -33,10 +33,10 @@ variable "project_name" {
   type        = string
 }
 
-variable "environment" {
-  description = "Environment name"
-  type        = string
-}
+# variable "environment" {
+#   description = "Environment name"
+#   type        = string
+# }
 
 variable "instance_type" {
   description = "EC2 instance type"
@@ -85,7 +85,7 @@ variable "node_groups" {
     })
   })))
 }
-variable "cluster_policys" {
+variable "cluster_policies" {
   description = "List of IAM policies to attach to the EKS cluster role"
   type        = list(string)
 }
