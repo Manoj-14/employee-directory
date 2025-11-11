@@ -60,7 +60,7 @@ jobs:
               run: terraform plan -no-color -input=false -out planfile
 
             - name: Terraform Plan check
-              if: github.event.inputs.actions == 'plan' || github.event.inputs.actions == 'apply' && steps.plan.outcome == 'failure'
+              if: ( github.event.inputs.actions == 'plan' || github.event.inputs.actions == 'apply' ) && steps.plan.outcome == 'failure'
               run: exit 1
 
             - name: Terraform apply
