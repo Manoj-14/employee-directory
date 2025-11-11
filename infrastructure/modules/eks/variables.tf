@@ -14,10 +14,6 @@ variable "environment" {
   description = "value for the environment tag"
   type = string
 }
-variable "region" {
-  description = "AWS region to deploy resources"
-  type        = string
-}
 variable "vpc_id" {
   description = "The VPC ID where the EKS cluster will be deployed"
   type        = string  
@@ -39,25 +35,23 @@ variable "node_groups" {
     })
   }))
 }
-variable "developer_username" {
-  description = "name of the developer iam user"
-  type        = string
-}
 
-variable "devops_username" {
-  description = "name of the DevOps iam user"
-  type        = string
-}
-
-variable "cluster_policies" {
-  description = "List of IAM policies to attach to the EKS cluster role"
-  type        = list(string)
-}
-variable "node_policies" {
-  description = "List of IAM policies to attach to the EKS node role"
-  type        = list(string)
-}
 variable "tags" {
   description = "value for the tags"
   type        = map(string)
+}
+
+variable "iam_devops_user_arn" {
+  description = "arn of the devops user iam"
+  type = string
+}
+
+variable "iam_cluster_role_arn" {
+  description = "arn of the iam cluster role"
+  type = string
+}
+
+variable "iam_node_role_arn" {
+  description = "arn of the iam node role"
+  type = string
 }
