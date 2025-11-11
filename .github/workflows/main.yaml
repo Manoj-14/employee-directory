@@ -2,13 +2,13 @@ name: Main CI/CD Workflow
 on:
   workflow_dispatch:
 
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
 
-  pull_request:
-    branches:
-      - main
+  # pull_request:
+  #   branches:
+  #     - main
 env:
   PROJECT_NAME: ${{secrets.PROJECT_NAME}}
   ENVIRONMENT: ${{github.ref == 'refs/heads/master' && 'production' || 'stage'}}
