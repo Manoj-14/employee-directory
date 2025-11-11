@@ -1,12 +1,19 @@
 name: Multi region & Multi cluster Deployment
 on:
     workflow_dispatch:
-
-    push:
-        branches:
-          - multi-region-eks
-          - main
-          - stage
+      inputs:
+        actions:
+          description: "Enter the action you need to do with terraform"
+          type: choice
+          options:
+            - plan
+            - apply
+            - destroy
+    # push:
+    #     branches:
+    #       - multi-region-eks
+    #       - main
+    #       - stage
 env:
     PROJECT_NAME: ${{secrets.PROJECT_NAME}}
     ENVIRONMENT: ${{github.ref == 'refs/heads/main' && 'production' || 'stage'}}
