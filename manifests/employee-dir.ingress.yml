@@ -1,10 +1,9 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "emp-dir-helm.fullname" . }}
+  name: emp-dir-ingress
   labels:
-    app.kubernetes.io/name: {{ include "emp-dir-helm.fullname" . }}
-    {{- include "emp-dir-helm.labels" . | nindent 4 }}
+    app.kubernetes.io/name: emp-dir-ingress
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
 
@@ -20,13 +19,13 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: employee.manojm.site
+  - host: employe.manojm.site
     http:
       paths:
       - pathType: Prefix
         path: "/"
         backend:
           service:
-            name: {{ include "emp-dir-helm.fullname" . }}
+            name: employee-dir
             port: 
               name: emp-port
