@@ -43,7 +43,7 @@ cluster_version = "1.30"
 node_groups = {
   "stage" = {
     "general" = {
-      instance_types = ["t3.medium"]
+      instance_types = ["c7i-flex.large"]
       capacity_type  = "ON_DEMAND"
       scaling_config = {
         desired_size = 2
@@ -54,7 +54,7 @@ node_groups = {
   }
   "production" = {
     "general" = {
-      instance_types = ["t3.large"]
+      instance_types = ["m7i-flex.large"]
       capacity_type  = "ON_DEMAND"
       scaling_config = {
         desired_size = 3
